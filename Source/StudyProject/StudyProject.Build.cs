@@ -7,17 +7,18 @@ public class StudyProject : ModuleRules
 	public StudyProject(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
 
-		PrivateDependencyModuleNames.AddRange(new string[] {  });
+		PublicDependencyModuleNames.AddRange(new string[] { 
+			// InitialModules
+			"Core", "CoreUObject", "Engine", "InputCore",
 
-		// Uncomment if you are using Slate UI
-		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
-		
-		// Uncomment if you are using online features
-		// PrivateDependencyModuleNames.Add("OnlineSubsystem");
+			// JsonModules
+			"Json", "JsonUtilities"
+		});
 
-		// To include OnlineSubsystemSteam, add it to the plugins section in your uproject file with the Enabled attribute set to true
-	}
+		PrivateDependencyModuleNames.AddRange(new string[] { });
+
+    }
+
+
 }
