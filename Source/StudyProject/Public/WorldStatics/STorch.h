@@ -12,15 +12,34 @@ class STUDYPROJECT_API ASTorch : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	ASTorch();
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+    virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+    virtual void Tick(float DeltaSeconds) override;
+
+
+private:
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ASTorch", Meta = (AllowPrivateAccess))
+    TObjectPtr<class UBoxComponent> BoxComponent;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ASTorch", Meta = (AllowPrivateAccess))
+    TObjectPtr<class UStaticMeshComponent> BodyStaticMeshComponent;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ASTorch", Meta = (AllowPrivateAccess))
+    TObjectPtr<class UPointLightComponent> PointLightComponent;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ASTorch", Meta = (AllowPrivateAccess))
+    TObjectPtr<class UParticleSystemComponent> ParticleSystemComponent;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = ASElectricPole, meta = (AllowPrivateAccess))
+    TObjectPtr<class URotatingMovementComponent> RotatingMovementComponent;
+
+    UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "ASTorch", Meta = (AllowPrivateAccess))
+    int32 ID;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ASTorch", Meta = (AllowPrivateAccess))
+    float RotationSpeed;
 
 };
