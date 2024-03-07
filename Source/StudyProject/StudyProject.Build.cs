@@ -14,6 +14,9 @@ public class StudyProject : ModuleRules
 
 			// JsonModules
 			"Json", "JsonUtilities"
+			
+			// Enhanced Input
+			, "EnhancedInput"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });
