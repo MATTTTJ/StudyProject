@@ -15,6 +15,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 
 ASRPGCharacter::ASRPGCharacter()
+	: bIsAttacking(false)
 {
 	PrimaryActorTick.bCanEverTick = false;
 
@@ -49,6 +50,18 @@ void ASRPGCharacter::BeginPlay()
             Subsystem->AddMappingContext(PlayerCharacterInputMappingContext, 0);
         }
     }
+
+    USAnimInstance* AnimInstance = Cast<USAnimInstance>(GetMesh()->GetAnimInstance());
+    if(true == ::IsValid(AnimInstance))
+    {
+        AnimInstance->OnMontageEnded.AddDynamic(this, &ThisClass::OnAttackMontageEnded);
+    }
+}
+
+void ASRPGCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+    GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+    bIsAttacking = false;
 }
 
 void ASRPGCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -96,6 +109,8 @@ void ASRPGCharacter::Attack(const FInputActionValue& InValue)
     USAnimInstance* AnimInstance = Cast<USAnimInstance>(GetMesh()->GetAnimInstance());
     if(true == ::IsValid(AnimInstance))
     {
+        GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
         AnimInstance->PlayAttackAnimMontage();
+        bIsAttacking = true;
     }
 }

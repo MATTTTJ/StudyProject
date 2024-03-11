@@ -24,6 +24,9 @@ public:
 
 	float GetRightInputValue() const { return RightInputValue; }
 
+	UFUNCTION()
+	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+
 protected:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
@@ -33,6 +36,7 @@ private:
 	void Look(const FInputActionValue& InValue);
 
 	void Attack(const FInputActionValue& InValue);
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ASRPGCharacter", Meta = (AllowPrivateAccess))
 	TObjectPtr<class USInputConfigData> PlayerCharacterInputConfigData;
@@ -46,4 +50,5 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ASRPGCharacter", Meta = (AllowPrivateAccess = true))
 	float RightInputValue;
 
+	uint8 bIsAttacking : 1;
 };
