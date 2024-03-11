@@ -37,6 +37,17 @@ private:
 
 	void Attack(const FInputActionValue& InValue);
 
+	UFUNCTION()
+	void CheckHit();
+
+	void BeginCombo();
+
+	UFUNCTION()
+	void CheckCanNextCombo();
+
+	UFUNCTION()
+	void EndCombo(class UAnimMontage* InAnimMontage, bool bInterrupted);
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ASRPGCharacter", Meta = (AllowPrivateAccess))
 	TObjectPtr<class USInputConfigData> PlayerCharacterInputConfigData;
@@ -51,4 +62,13 @@ private:
 	float RightInputValue;
 
 	uint8 bIsAttacking : 1;
+
+	FString AttackAnimMontageSectionName = FString(TEXT("Attack"));
+
+	int32 MaxComboCount = 3;
+
+	int32 CurrentComboCount = 0;
+
+	bool bIsAttackKeyPressed = false;
+	// 에디터에서 관리되거나 시리얼라이즈 될 필요 없으므로 bool 자료형 사용
 };

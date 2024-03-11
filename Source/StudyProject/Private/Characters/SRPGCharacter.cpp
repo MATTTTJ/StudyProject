@@ -55,6 +55,8 @@ void ASRPGCharacter::BeginPlay()
     if(true == ::IsValid(AnimInstance))
     {
         AnimInstance->OnMontageEnded.AddDynamic(this, &ThisClass::OnAttackMontageEnded);
+        AnimInstance->OnCheckHitDelegate.AddDynamic(this, &ThisClass::CheckHit);
+        AnimInstance->OnCheckCanNextComboDelegate.AddDynamic(this, &ThisClass::CheckCanNextCombo);
     }
 }
 
@@ -104,13 +106,86 @@ void ASRPGCharacter::Look(const FInputActionValue& InValue)
 
 void ASRPGCharacter::Attack(const FInputActionValue& InValue)
 {
-    UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Attack() has been called")));
-
+    // 체공중 공격불가
     USAnimInstance* AnimInstance = Cast<USAnimInstance>(GetMesh()->GetAnimInstance());
+    if(false == ::IsValid(AnimInstance))
+    {
+        return;
+    }
+
+    if (true == AnimInstance->bIsFalling)
+        return;
+    // ~체공중 공격불가
+
+    if(0 == CurrentComboCount)
+    {
+        BeginCombo();
+        return;
+    }
+    else
+    {
+        ensure(FMath::IsWithinInclusive<int32>(CurrentComboCount, 1, MaxComboCount));
+        bIsAttackKeyPressed = true;
+    }
+
+    //UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Attack() has been called")));
+
+   /* USAnimInstance* AnimInstance = Cast<USAnimInstance>(GetMesh()->GetAnimInstance());
     if(true == ::IsValid(AnimInstance))
     {
         GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
         AnimInstance->PlayAttackAnimMontage();
         bIsAttacking = true;
+    }*/
+}
+
+void ASRPGCharacter::CheckHit()
+{
+    UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("CheckHit() has been called")));
+    // 다음 단원에서 콜리전 배움
+}
+
+void ASRPGCharacter::BeginCombo()
+{
+    USAnimInstance* AnimInstance = Cast<USAnimInstance>(GetMesh()->GetAnimInstance());
+    if(false == ::IsValid(AnimInstance))
+    {
+        return;
     }
+
+    CurrentComboCount = 1;
+
+    GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+
+    AnimInstance->PlayAttackAnimMontage();
+
+    FOnMontageEnded OnMontageEndedDelegate;
+    OnMontageEndedDelegate.BindUObject(this, &ThisClass::EndCombo);
+    AnimInstance->Montage_SetEndDelegate(OnMontageEndedDelegate, AnimInstance->AttackAnimMontage);
+}
+
+void ASRPGCharacter::CheckCanNextCombo()
+{
+    USAnimInstance* AnimInstance = Cast<USAnimInstance>(GetMesh()->GetAnimInstance());
+    if (false == ::IsValid(AnimInstance))
+    {
+        return;
+    }
+
+    if(true == bIsAttackKeyPressed)
+    {
+        CurrentComboCount = FMath::Clamp(CurrentComboCount + 1, 1, MaxComboCount);
+
+        FName NextSectionName = *FString::Printf(TEXT("%s%d"), *AttackAnimMontageSectionName, CurrentComboCount);
+        AnimInstance->Montage_JumpToSection(NextSectionName, AnimInstance->AttackAnimMontage);
+        bIsAttackKeyPressed = false;
+    }
+}
+
+void ASRPGCharacter::EndCombo(UAnimMontage* InAnimMontage, bool bInterrupted)
+{
+    ensure(0 != CurrentComboCount);
+    CurrentComboCount = 0;
+    bIsAttackKeyPressed = false;
+    GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 }

@@ -6,6 +6,8 @@
 #include "Animation/AnimInstance.h"
 #include "SAnimInstance.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCheckHitDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCheckCanNextComboDelegate);
 /**
  * 
  */
@@ -25,6 +27,12 @@ public:
 
 private:
 	void PlayAttackAnimMontage();
+
+	UFUNCTION()
+	void AnimNotify_CheckHit();
+
+	UFUNCTION()
+	void AnimNotify_CheckCanNextCombo();
 	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "USAnimInstance")
@@ -41,4 +49,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "USAnimInstance")
 	TObjectPtr<class UAnimMontage> AttackAnimMontage;
+
+	FOnCheckHitDelegate OnCheckHitDelegate;
+	FOnCheckCanNextComboDelegate OnCheckCanNextComboDelegate;
 };

@@ -51,3 +51,19 @@ void USAnimInstance::PlayAttackAnimMontage()
 	    }
     }
 }
+
+void USAnimInstance::AnimNotify_CheckHit()
+{
+    if(true == OnCheckHitDelegate.IsBound())
+    {
+        OnCheckHitDelegate.Broadcast();
+    }
+}
+
+void USAnimInstance::AnimNotify_CheckCanNextCombo()
+{
+    if(true == OnCheckCanNextComboDelegate.IsBound())
+    {
+        OnCheckCanNextComboDelegate.Broadcast();
+    }
+}
