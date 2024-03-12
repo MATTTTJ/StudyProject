@@ -34,6 +34,8 @@ ASRPGCharacter::ASRPGCharacter()
     GetCharacterMovement()->bOrientRotationToMovement = true;
     GetCharacterMovement()->bUseControllerDesiredRotation = false;
     GetCharacterMovement()->RotationRate = FRotator(0.f, 480.f, 0.f);
+
+    GetCapsuleComponent()->SetCollisionProfileName(TEXT("SCharacter"));
 }
 
 
@@ -141,8 +143,50 @@ void ASRPGCharacter::Attack(const FInputActionValue& InValue)
 
 void ASRPGCharacter::CheckHit()
 {
-    UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("CheckHit() has been called")));
-    // 다음 단원에서 콜리전 배움
+    //UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("CheckHit() has been called")));
+
+    FHitResult HitResult;
+    FCollisionQueryParams Params(NAME_None, false, this);
+
+    bool bResult = GetWorld()->SweepSingleByChannel(
+        HitResult,
+        GetActorLocation(),
+        GetActorLocation() + AttackRange,
+        FQuat::Identity,
+        ECC_GameTraceChannel2,
+        FCollisionShape::MakeSphere(AttackRadius),
+        Params
+    );
+
+    if(true == bResult)
+    {
+	    if(true == ::IsValid(HitResult.GetActor()))
+	    {
+            UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Hit Actor Name : %s"), *HitResult.GetActor()->GetName()));
+
+            //UE_LOG(LogTemp, Error, TEXT("Hit Actor Name : %s"), *HitResult.GetActor()->GetName());
+	    }
+    }
+
+#pragma region CollisionDebugDrawing
+    FVector TraceVec = GetActorForwardVector() * AttackRange;
+    FVector Center = GetActorLocation() + TraceVec * 0.5f;
+    float HalfHeight = AttackRange * 0.5f + AttackRadius;
+    FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVec).ToQuat();
+    FColor DrawColor = true == bResult ? FColor::Green : FColor::Red;
+    float DebugLifeTime = 5.f;
+
+    DrawDebugCapsule(
+        GetWorld(),
+        Center,
+        HalfHeight,
+        AttackRadius,
+        CapsuleRot,
+        DrawColor,
+        false,
+        DebugLifeTime
+    );
+#pragma endregion 
 }
 
 void ASRPGCharacter::BeginCombo()
