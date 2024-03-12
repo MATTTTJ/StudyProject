@@ -50,6 +50,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "USAnimInstance")
 	TObjectPtr<class UAnimMontage> AttackAnimMontage;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "USAnimInstance", Meta = (AllowPrivateAccess))
+	uint8 bIsDead : 1;
+
 	FOnCheckHitDelegate OnCheckHitDelegate;
 	FOnCheckCanNextComboDelegate OnCheckCanNextComboDelegate;
 };

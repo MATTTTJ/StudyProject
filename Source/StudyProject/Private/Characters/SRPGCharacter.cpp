@@ -13,6 +13,8 @@
 #include "Animations/SAnimInstance.h"
 #include "Inputs/SInputConfigData.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Engine/EngineTypes.h"
+#include "Engine/DamageEvents.h"
 
 ASRPGCharacter::ASRPGCharacter()
 	: bIsAttacking(false)
@@ -66,6 +68,26 @@ void ASRPGCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupt
 {
     GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
     bIsAttacking = false;
+}
+
+float ASRPGCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
+	AActor* DamageCauser)
+{
+    float FinalDamageAmount = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+    CurrentHP = FMath::Clamp(CurrentHP - FinalDamageAmount, 0.f, MaxHP);
+
+    if(CurrentHP < KINDA_SMALL_NUMBER)
+    {
+        bIsDead = true;
+        CurrentHP = 0.f;
+        GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+    }
+
+    UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("%s [%.1f / %.1f]"), *GetName(), CurrentHP, MaxHP));
+
+    return FinalDamageAmount;
 }
 
 void ASRPGCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -162,9 +184,10 @@ void ASRPGCharacter::CheckHit()
     {
 	    if(true == ::IsValid(HitResult.GetActor()))
 	    {
-            UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Hit Actor Name : %s"), *HitResult.GetActor()->GetName()));
+            //UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Hit Actor Name : %s"), *HitResult.GetActor()->GetName()));
 
-            //UE_LOG(LogTemp, Error, TEXT("Hit Actor Name : %s"), *HitResult.GetActor()->GetName());
+            FDamageEvent DamageEvent;
+            HitResult.GetActor()->TakeDamage(50.f, DamageEvent, GetController(), this);
 	    }
     }
 
