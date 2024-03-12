@@ -10,7 +10,8 @@
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"Engine",
-				"CoreUObject"
+				"CoreUObject",
+				"AIModule"
 			]
 		}
 	],
@@ -22,9 +23,9 @@
 				"Editor"
 			]
 		},
-    {
-      "Name": "EnhancedInput",
-      "Enabled": true
-    }
+		{
+			"Name": "EnhancedInput",
+			"Enabled": true
+		}
 	]
 }

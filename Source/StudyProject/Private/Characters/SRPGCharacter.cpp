@@ -1,6 +1,5 @@
 // SRPGCharacter.cpp
 
-
 #include "Characters/SRPGCharacter.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -39,7 +38,6 @@ ASRPGCharacter::ASRPGCharacter()
 
     GetCapsuleComponent()->SetCollisionProfileName(TEXT("SCharacter"));
 }
-
 
 void ASRPGCharacter::BeginPlay()
 {
@@ -173,7 +171,7 @@ void ASRPGCharacter::CheckHit()
     bool bResult = GetWorld()->SweepSingleByChannel(
         HitResult,
         GetActorLocation(),
-        GetActorLocation() + AttackRange,
+        GetActorLocation() + AttackRange * GetActorForwardVector(),
         FQuat::Identity,
         ECC_GameTraceChannel2,
         FCollisionShape::MakeSphere(AttackRadius),

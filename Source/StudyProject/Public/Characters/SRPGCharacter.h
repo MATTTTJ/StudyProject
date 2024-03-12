@@ -63,7 +63,7 @@ private:
 	float RightInputValue;
 
 	uint8 bIsAttacking : 1;
-
+	// 비트플래그 공부해볼 것, bool 대신 사용하는 것 (1비트만 사용하겠다.)
 	FString AttackAnimMontageSectionName = FString(TEXT("Attack"));
 
 	int32 MaxComboCount = 3;
