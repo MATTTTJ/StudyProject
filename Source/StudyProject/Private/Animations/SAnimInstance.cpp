@@ -2,6 +2,8 @@
 
 
 #include "Animations/SAnimInstance.h"
+
+#include "Characters/SNonPlayerCharacter.h"
 #include "Characters/SRPGCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -27,6 +29,14 @@ void USAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
             bIsDead = OwnerCharacter->IsDead();
         }
     }
+
+    // 논플레이어 스피드 체크 로그
+   /* ASNonPlayerCharacter* NonPlayer = Cast<ASNonPlayerCharacter>(TryGetPawnOwner());
+    if(true == ::IsValid(NonPlayer))
+    {
+        if(CurrentSpeed > KINDA_SMALL_NUMBER)
+			UE_LOG(LogTemp, Error, TEXT("Current Speed [ %.3f ]"), CurrentSpeed);
+    }*/
 }
 
 void USAnimInstance::NativeInitializeAnimation()

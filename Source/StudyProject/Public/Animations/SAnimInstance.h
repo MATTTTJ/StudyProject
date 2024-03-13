@@ -25,6 +25,8 @@ public:
 
 	virtual void NativeInitializeAnimation() override;
 
+	const float GetCurrentSpeed() const { return CurrentSpeed; }
+	
 private:
 	void PlayAttackAnimMontage();
 

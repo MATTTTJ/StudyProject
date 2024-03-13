@@ -16,4 +16,6 @@ class STUDYPROJECT_API ASNonPlayerCharacter : public ASCharacter
 
 public:
 	ASNonPlayerCharacter();
+
+	virtual void BeginPlay() override;
 };

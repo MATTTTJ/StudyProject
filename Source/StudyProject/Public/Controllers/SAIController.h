@@ -17,6 +17,10 @@ class STUDYPROJECT_API ASAIController : public AAIController
 public:
 	ASAIController();
 
+	void BeginAI(APawn* InPawn);
+
+	void EndAI();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -26,9 +30,19 @@ private:
 	void OnPatrolTimerElapsed();
 
 public:
-	FTimerHandle PatrolTimerHandle = FTimerHandle();
+	//FTimerHandle PatrolTimerHandle = FTimerHandle();
 
-	static const float PatrolRepeatInterval;
+	//static const float PatrolRepeatInterval;
 
+	static const FName StartPatrolPositionKey;
+	static const FName EndPatrolPositionKey;
+	static const FName TargetActorKey;
 	static const float PatrolRadius;
+
+private:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = ASAIController, Meta = (AllowPrivateAccess))
+	TObjectPtr<class UBlackboardData> BlackboardDataAsset;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = ASAIController, Meta = (AllowPrivateAccess))
+	TObjectPtr<class UBehaviorTree> BehaviorTree;
 };
