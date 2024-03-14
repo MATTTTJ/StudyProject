@@ -24,6 +24,14 @@ public:
 
 	float GetRightInputValue() const { return RightInputValue; }
 
+	float GetMaxEXP() const { return MaxEXP; }
+
+	float GetCurrentEXP() const { return CurrentEXP; }
+
+	void SetMaxEXP(float InMaxEXP) { MaxEXP = InMaxEXP; }
+
+	void SetCurrentEXP(float InCurrentEXP);
+
 	UFUNCTION()
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
@@ -76,4 +84,14 @@ private:
 
 	float AttackRadius = 50.f;
 	// 에디터에서 관리되거나 시리얼라이즈 될 필요 없으므로 bool 자료형 사용
+
+	// EXP
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ASRPGCharacter", Meta = (AllowPrivateAccess))
+	TObjectPtr<class UParticleSystemComponent> ParticleSystemComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ASRPGCharacter", Meta = (AllowPrivateAccess))
+	float MaxEXP = 10;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ASRPGCharacter", Meta = (AllowPrivateAccess))
+	float CurrentEXP = 0;
 };

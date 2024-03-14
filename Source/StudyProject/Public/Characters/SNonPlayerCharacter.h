@@ -14,8 +14,27 @@ class STUDYPROJECT_API ASNonPlayerCharacter : public ASCharacter
 {
 	GENERATED_BODY()
 
+	friend class UBTTask_Attack;
+
 public:
 	ASNonPlayerCharacter();
 
 	virtual void BeginPlay() override;
+
+	bool IsNowAttacking() const { return bIsAttacking; }
+
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+private:
+	void Attack();
+
+	UFUNCTION()
+	void OnAttackAnimMontageEnded(class UAnimMontage* Montage, bool bIsInterrupt);
+
+private:
+	float AttackRange = 200.f;
+
+	float AttackRadius = 50.f;
+
+	bool bIsAttacking = false;
+
 };
