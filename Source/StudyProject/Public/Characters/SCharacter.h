@@ -14,13 +14,17 @@ class STUDYPROJECT_API ASCharacter : public ACharacter
 public:
     ASCharacter();
 
-    // HP
+    virtual void BeginPlay() override;
+
+    virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
+    class USStatComponent* GetStatComponent() { return StatComponent; }
+
+    UFUNCTION()
+    virtual void OnCharacterDeath();
+
 public:
-    float GetMaxHP() const { return MaxHP; }
-    float GetCurrentHP() const { return CurrentHP; }
-    void SetMaxHP(float InMaxHP) { MaxHP = InMaxHP; }
-    void SetCurrentHP(float InCurrentHP) { CurrentHP = InCurrentHP; }
-    bool IsDead() const { return bIsDead; }
+
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ASTPSCharacter", meta = (AllowPrivateAccess))
     TObjectPtr<class USpringArmComponent> SpringArmComponent;
@@ -28,12 +32,6 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ASTPSCharacter", meta = (AllowPrivateAccess))
     TObjectPtr<class UCameraComponent> CameraComponent;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ASRPGCharacter", Meta = (AllowPrivateAccess))
-    float MaxHP = 200.f;
-
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ASRPGCharacter", Meta = (AllowPrivateAccess))
-    float CurrentHP = 200.f;
-
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ASPRGCharacter", Meta = (AllowPrivateAccess))
-    uint8 bIsDead : 1;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ASPlayerCharacter", Meta = (AllowPrivateAccess))
+    TObjectPtr<class USStatComponent> StatComponent;
 };

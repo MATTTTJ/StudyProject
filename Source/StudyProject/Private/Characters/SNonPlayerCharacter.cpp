@@ -7,6 +7,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Animations/SAnimInstance.h"
 #include "Characters/SRPGCharacter.h"
+#include "Component/SStatComponent.h"
 #include "Components/CapsuleComponent.h"
 
 ASNonPlayerCharacter::ASNonPlayerCharacter()
@@ -46,32 +47,20 @@ float ASNonPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& D
 {
 	float FinalDamageAmount = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	CurrentHP = FMath::Clamp(CurrentHP - FinalDamageAmount, 0.f, MaxHP);
-
-	if(CurrentHP < KINDA_SMALL_NUMBER)
+	if(StatComponent->GetCurrentHP() < KINDA_SMALL_NUMBER)
 	{
 		ASRPGCharacter* DamageCauserCharacter = Cast<ASRPGCharacter>(DamageCauser);
-
 		if(true == ::IsValid(DamageCauserCharacter))
 		{
 			DamageCauserCharacter->SetCurrentEXP(DamageCauserCharacter->GetCurrentEXP() + 5.f);
 		}
 
-		CurrentHP = 0.f;
-
-		bIsDead = true;
-
-		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
-
 		ASAIController* AIController = Cast<ASAIController>(GetController());
-
 		if(true == ::IsValid(AIController))
 		{
 			AIController->EndAI();
 		}
 	}
-
 
 	return FinalDamageAmount;
 }

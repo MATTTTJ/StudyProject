@@ -89,18 +89,7 @@ float ASRPGCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageE
 {
     float FinalDamageAmount = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-    CurrentHP = FMath::Clamp(CurrentHP - FinalDamageAmount, 0.f, MaxHP);
-
-    if(CurrentHP < KINDA_SMALL_NUMBER)
-    {
-        bIsDead = true;
-        CurrentHP = 0.f;
-        GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-        GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
-    }
-
-    UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("%s [%.1f / %.1f]"), *GetName(), CurrentHP, MaxHP));
-
+  
     return FinalDamageAmount;
 }
 
