@@ -12,22 +12,37 @@
 
 USGameInstance::USGameInstance()
 {
-	UE_LOG(LogTemp, Log, TEXT("USGameInstance() has been Called"));
-
-	Name = TEXT("USGameInstance Class Default Object");
-	// CDO 의 Name 속성이 저장됨
-	// 중단점을 걸어보면 언리얼 에디터가 실행되기 전에 호출됨을 알 수 있음.
 }
 
 void USGameInstance::Init()
 {
 	Super::Init();
 
-	
+	// 데이터 테이블 가져왔을 때 올바른지 아닌지 판단하는 코드
+	if(false == ::IsValid(CharacterStatDataTable) || CharacterStatDataTable->GetRowMap().Num() <= 0)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Not enough data in CharacterStatDataTable."));
+	}
+	else
+	{
+		for(int32 i = 1; i <= CharacterStatDataTable->GetRowMap().Num(); ++i)
+		{
+			check(nullptr != GetCharacterStatDataTableRow(i));
+		}
+	}
 }
 
 void USGameInstance::Shutdown()
 {
-
 	Super::Shutdown();
+}
+
+FSStatTableRow* USGameInstance::GetCharacterStatDataTableRow(int32 InLevel)
+{
+	if(true == ::IsValid(CharacterStatDataTable))
+	{
+		return CharacterStatDataTable->FindRow<FSStatTableRow>(*FString::FromInt(InLevel), TEXT(""));
+	}
+
+	return nullptr;
 }
