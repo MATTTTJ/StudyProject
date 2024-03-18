@@ -25,9 +25,15 @@ public class StudyProject : ModuleRules
 
 			// UI
 			, "UMG"
+
 		});
 
-		PrivateDependencyModuleNames.AddRange(new string[] { });
+		PrivateDependencyModuleNames.AddRange(new string[] 
+		{
+			// Custom Modules
+			"StudyProjectSettings",
+		});
+
 
     }
 

@@ -30,6 +30,9 @@ public:
 	UFUNCTION()
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
+	UFUNCTION()
+	void OnAssetLoaded();
+
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 protected:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
@@ -84,5 +87,8 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ASRPGCharacter", Meta = (AllowPrivateAccess))
 	TObjectPtr<class UParticleSystemComponent> ParticleSystemComponent;
 
+	// 비동기 로딩
+	FSoftObjectPath CurrentPlayerCharacterMeshPath = FSoftObjectPath();
 
+	TSharedPtr<struct FStreamableHandle> AssetStreamableHandle = nullptr;
 };

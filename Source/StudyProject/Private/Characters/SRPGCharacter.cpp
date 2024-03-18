@@ -16,6 +16,10 @@
 #include "Engine/DamageEvents.h"
 #include "Game/SPlayerState.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "SPlayerCharacterSettings.h"
+#include "Game/SGameInstance.h"
+#include "Engine/StreamableManager.h"
+
 
 ASRPGCharacter::ASRPGCharacter()
 	: bIsAttacking(false)
@@ -39,6 +43,17 @@ ASRPGCharacter::ASRPGCharacter()
     GetCharacterMovement()->RotationRate = FRotator(0.f, 480.f, 0.f);
 
     GetCapsuleComponent()->SetCollisionProfileName(TEXT("SCharacter"));
+
+    // 다른 모듈에서 불러온 Path 값들을 확인하는 로그
+	const USPlayerCharacterSettings* CDO = GetDefault<USPlayerCharacterSettings>();
+    if(0< CDO->PlayerCharacterMeshPaths.Num())
+    {
+	    for(FSoftObjectPath PlayerCharacterMeshPath : CDO->PlayerCharacterMeshPaths)
+	    {
+            UE_LOG(LogTemp, Warning, TEXT("Path : %s"), *(PlayerCharacterMeshPath.ToString()));
+	    }
+    }
+    // ~
 
     // EXP
     ParticleSystemComponent = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("ParticleSystemComponent"));
@@ -76,6 +91,19 @@ void ASRPGCharacter::BeginPlay()
             PS->OnCurrentLevelChangedDelegate.AddDynamic(this, &ThisClass::OnCurrentLevelChanged);
 	    }
     }
+
+    const USPlayerCharacterSettings* CDO = GetDefault<USPlayerCharacterSettings>();
+    int32 RandIndex = FMath::RandRange(0, CDO->PlayerCharacterMeshPaths.Num() - 1);
+    CurrentPlayerCharacterMeshPath = CDO->PlayerCharacterMeshPaths[RandIndex];
+
+    USGameInstance* SGI = Cast<USGameInstance>(GetGameInstance());
+    if(true == ::IsValid(SGI))
+    {
+        AssetStreamableHandle = SGI->StreamableManager.RequestAsyncLoad(
+            CurrentPlayerCharacterMeshPath,
+            FStreamableDelegate::CreateUObject(this, &ThisClass::OnAssetLoaded)
+        );
+    }
 }
 
 void ASRPGCharacter::OnCurrentLevelChanged(int32 InOldCurrentLevel, int32 InNewCurrentLevel)
@@ -89,8 +117,18 @@ void ASRPGCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupt
     bIsAttacking = false;
 }
 
+void ASRPGCharacter::OnAssetLoaded()
+{
+    AssetStreamableHandle->ReleaseHandle();
+    TSoftObjectPtr<USkeletalMesh> LoadedAsset(CurrentPlayerCharacterMeshPath);
+    if(true == LoadedAsset.IsValid())
+    {
+        GetMesh()->SetSkeletalMesh(LoadedAsset.Get());
+    }
+}
+
 float ASRPGCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
-	AActor* DamageCauser)
+                                 AActor* DamageCauser)
 {
     float FinalDamageAmount = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 

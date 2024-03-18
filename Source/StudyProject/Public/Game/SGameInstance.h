@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "Engine/DataTable.h"
+#include "Engine/AssetManager.h"
 #include "SGameInstance.generated.h"
 
 USTRUCT(BlueprintType)
@@ -44,6 +45,9 @@ public:
 
 	// 줄 수 넣으면 그 열의 값을 가져옴(지금은 레벨을 가져온다고 보면된다.
 	FSStatTableRow* GetCharacterStatDataTableRow(int32 InLevel);
+
+public:
+	FStreamableManager StreamableManager = FStreamableManager();
 
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "USGameInstance", Meta = (AllowPrivateAccess))
