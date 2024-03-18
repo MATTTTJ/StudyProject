@@ -4,6 +4,10 @@
 #include "Game/SPlayerState.h"
 
 #include "Game/SGameInstance.h"
+#include "Game/SPlayerStateSave.h"
+#include "Kismet/GameplayStatics.h"
+
+FString ASPlayerState::SaveSlotName(TEXT("PlayerCharacter0"));
 
 ASPlayerState::ASPlayerState()
 {
@@ -22,6 +26,17 @@ void ASPlayerState::InitPlayerState()
 			MaxEXP = SGI->GetCharacterStatDataTableRow(1)->MaxEXP;
 		}
 	}
+
+	USPlayerStateSave* PlayerStateSave = Cast<USPlayerStateSave>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, 0));
+	if(false == ::IsValid(PlayerStateSave))
+	{
+		PlayerStateSave = GetMutableDefault<USPlayerStateSave>();
+		// Mutable은 수정 가능하다는 의미
+	}
+
+	SetPlayerName(PlayerStateSave->PlayerCharacterName);
+	SetCurrentLevel(PlayerStateSave->CurrentLevel);
+	SetCurrentEXP(PlayerStateSave->CurrentEXP);
 }
 
 void ASPlayerState::SetCurrentLevel(int32 InCurrentLevel)
@@ -49,5 +64,20 @@ void ASPlayerState::SetCurrentEXP(float InCurrentEXP)
 		CurrentEXP = 0.f;
 	}
 
-	OnCurrentExpChangedDelegate.Broadcast(OldCurrentEXP, CurrentEXP);
+	OnCurrentEXPChangedDelegate.Broadcast(OldCurrentEXP, CurrentEXP);
+
+	SavePlayerState();
+}
+
+void ASPlayerState::SavePlayerState()
+{
+	USPlayerStateSave* PlayerStateSave = NewObject<USPlayerStateSave>();
+	PlayerStateSave->PlayerCharacterName = GetPlayerName();
+	PlayerStateSave->CurrentLevel = GetCurrentLevel();
+	PlayerStateSave->CurrentEXP = GetCurrentEXP();
+
+	if(true == UGameplayStatics::SaveGameToSlot(PlayerStateSave, SaveSlotName, 0))
+	{
+		UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Saved")));
+	}
 }

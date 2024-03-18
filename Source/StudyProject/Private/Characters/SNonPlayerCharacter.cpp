@@ -12,6 +12,8 @@
 #include "Components/CapsuleComponent.h"
 #include "Game/SPlayerState.h"
 #include "UI/SW_HPBar.h"
+#include "Engine/EngineTypes.h"
+#include "Engine/DamageEvents.h"
 
 ASNonPlayerCharacter::ASNonPlayerCharacter()
 {
@@ -113,7 +115,13 @@ void ASNonPlayerCharacter::Attack()
 		{
 			//UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("[NPC] Hit Actor Name : %s"), *HitResult.GetActor()->GetName()));
 
-			UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("[NPC] Hit Actor Class Name : %s"), *HitResult.GetActor()->GetClass()->GetName()));
+			//UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("[NPC] Hit Actor Class Name : %s"), *HitResult.GetActor()->GetClass()->GetName()));
+
+			ASCharacter* PlayerCharacter = Cast<ASCharacter>(HitResult.GetActor());
+			if(true == ::IsValid(PlayerCharacter))
+			{
+				PlayerCharacter->TakeDamage(10.f, FDamageEvent(), GetController(), this);
+			}
 		}
 	}
 

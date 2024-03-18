@@ -35,9 +35,11 @@ public:
 
 	void SetCurrentEXP(float InCurrentEXP);
 
+	void SavePlayerState();
+
 public:
 	FOnCurrentLevelChangedDelegate OnCurrentLevelChangedDelegate;
-	FOnCurrentEXPChangedDelegate OnCurrentExpChangedDelegate;
+	FOnCurrentEXPChangedDelegate OnCurrentEXPChangedDelegate;
 
 private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "USStatComponent", Meta = (AllowPrivateAccess = true))
@@ -54,4 +56,6 @@ private:
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "USStatComponent", Meta = (AllowPrivateAccess = true))
 	float CurrentEXP = 0;
+
+	static FString SaveSlotName;
 };
