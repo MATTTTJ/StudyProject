@@ -23,6 +23,7 @@ public:
     UFUNCTION()
     virtual void OnCharacterDeath();
 
+    virtual void SetWidget(class UStudyUserWidget* InStudyUserWidget) {}
 public:
 
 protected:
