@@ -40,6 +40,7 @@ public:
 public:
 	FOnCurrentLevelChangedDelegate OnCurrentLevelChangedDelegate;
 	FOnCurrentEXPChangedDelegate OnCurrentEXPChangedDelegate;
+	static FString SaveSlotName;
 
 private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "USStatComponent", Meta = (AllowPrivateAccess = true))
@@ -57,5 +58,4 @@ private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "USStatComponent", Meta = (AllowPrivateAccess = true))
 	float CurrentEXP = 0;
 
-	static FString SaveSlotName;
 };
