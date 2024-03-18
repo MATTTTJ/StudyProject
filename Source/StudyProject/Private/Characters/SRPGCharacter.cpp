@@ -14,6 +14,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Engine/EngineTypes.h"
 #include "Engine/DamageEvents.h"
+#include "Game/SPlayerState.h"
 #include "Particles/ParticleSystemComponent.h"
 
 ASRPGCharacter::ASRPGCharacter()
@@ -66,16 +67,20 @@ void ASRPGCharacter::BeginPlay()
         AnimInstance->OnCheckHitDelegate.AddDynamic(this, &ThisClass::CheckHit);
         AnimInstance->OnCheckCanNextComboDelegate.AddDynamic(this, &ThisClass::CheckCanNextCombo);
     }
+
+    ASPlayerState* PS = GetPlayerState<ASPlayerState>();
+    if(true == ::IsValid(PS))
+    {
+	    if(false == PS->OnCurrentLevelChangedDelegate.IsAlreadyBound(this, &ThisClass::OnCurrentLevelChanged))
+	    {
+            PS->OnCurrentLevelChangedDelegate.AddDynamic(this, &ThisClass::OnCurrentLevelChanged);
+	    }
+    }
 }
 
-void ASRPGCharacter::SetCurrentEXP(float InCurrentEXP)
+void ASRPGCharacter::OnCurrentLevelChanged(int32 InOldCurrentLevel, int32 InNewCurrentLevel)
 {
-    CurrentEXP = InCurrentEXP;
-    if(MaxEXP - KINDA_SMALL_NUMBER < CurrentEXP)
-    {
-        CurrentEXP = 0.f;
-        ParticleSystemComponent->Activate(true);
-    }
+    ParticleSystemComponent->Activate(true);
 }
 
 void ASRPGCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)

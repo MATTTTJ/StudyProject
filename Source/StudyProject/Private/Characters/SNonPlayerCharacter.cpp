@@ -10,6 +10,7 @@
 #include "Component/SStatComponent.h"
 #include "Component/SWidgetComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Game/SPlayerState.h"
 #include "UI/SW_HPBar.h"
 
 ASNonPlayerCharacter::ASNonPlayerCharacter()
@@ -69,10 +70,17 @@ float ASNonPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& D
 
 	if(StatComponent->GetCurrentHP() < KINDA_SMALL_NUMBER)
 	{
-		ASRPGCharacter* DamageCauserCharacter = Cast<ASRPGCharacter>(DamageCauser);
-		if(true == ::IsValid(DamageCauserCharacter))
+		if(true == ::IsValid(LastHitBy))
 		{
-			DamageCauserCharacter->SetCurrentEXP(DamageCauserCharacter->GetCurrentEXP() + 5.f);
+			ASCharacter* DamageCauserCharacter = Cast<ASCharacter>(LastHitBy->GetPawn());
+			if(true == ::IsValid(DamageCauserCharacter))
+			{
+				ASPlayerState* PS = Cast<ASPlayerState>(DamageCauserCharacter->GetPlayerState());
+				if(true == ::IsValid(PS))
+				{
+					PS->SetCurrentEXP(PS->GetCurrentEXP() + 20.f);
+				}
+			}
 		}
 
 		ASAIController* AIController = Cast<ASAIController>(GetController());
