@@ -93,16 +93,16 @@ void ASRPGCharacter::BeginPlay()
     }
 
     const USPlayerCharacterSettings* CDO = GetDefault<USPlayerCharacterSettings>();
-    int32 RandIndex = FMath::RandRange(0, CDO->PlayerCharacterMeshPaths.Num() - 1);
-    CurrentPlayerCharacterMeshPath = CDO->PlayerCharacterMeshPaths[RandIndex];
 
-    USGameInstance* SGI = Cast<USGameInstance>(GetGameInstance());
-    if(true == ::IsValid(SGI))
+    int32 SelectedMeshIndex = static_cast<int32>(PS->GetCurrentTeamType()) -1;
+
+    CurrentPlayerCharacterMeshPath = CDO->PlayerCharacterMeshPaths[SelectedMeshIndex];
+
+    if(USGameInstance* SGI = Cast<USGameInstance>(GetGameInstance()))
     {
         AssetStreamableHandle = SGI->StreamableManager.RequestAsyncLoad(
             CurrentPlayerCharacterMeshPath,
-            FStreamableDelegate::CreateUObject(this, &ThisClass::OnAssetLoaded)
-        );
+            FStreamableDelegate::CreateUObject(this, &ThisClass::OnAssetLoaded));
     }
 }
 
