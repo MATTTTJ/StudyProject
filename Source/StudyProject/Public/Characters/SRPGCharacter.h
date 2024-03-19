@@ -44,6 +44,8 @@ private:
 
 	void Attack(const FInputActionValue& InValue);
 
+	void Menu(const FInputActionValue& InValue);
+
 	UFUNCTION()
 	void CheckHit();
 
