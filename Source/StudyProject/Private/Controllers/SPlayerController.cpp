@@ -67,10 +67,7 @@ void ASPlayerController::BeginPlay()
 				USStatComponent* StatComponent = PC->GetStatComponent();
 				if(true == ::IsValid(StatComponent))
 				{
-					if(true == ::IsValid(StatComponent))
-					{
-						HUDWidget->BindStatComponent(StatComponent);
-					}
+					HUDWidget->BindStatComponent(StatComponent);
 				}
 			}
 		}
@@ -84,6 +81,17 @@ void ASPlayerController::BeginPlay()
 			MenuUIInstance->AddToViewport(3); // »óÀ§¿¡ ¶ç¿ò
 
 			MenuUIInstance->SetVisibility(ESlateVisibility::Collapsed);
+		}
+	}
+
+	if(true == ::IsValid(CrosshairUIClass))
+	{
+		UUserWidget* CrosshairUI = CreateWidget<UUserWidget>(this, CrosshairUIClass);
+		if(true ==::IsValid(CrosshairUI))
+		{
+			CrosshairUI->AddToViewport(1);
+
+			CrosshairUI->SetVisibility(ESlateVisibility::Visible);
 		}
 	}
 }

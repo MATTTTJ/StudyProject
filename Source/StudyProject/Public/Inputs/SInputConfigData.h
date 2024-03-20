@@ -31,5 +31,11 @@ public:
 	TObjectPtr<class UInputAction> AttackAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<class UInputAction> IronSightAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<class UInputAction> ShotTriggerAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<class UInputAction> MenuAction;
 };
