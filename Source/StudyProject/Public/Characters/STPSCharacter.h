@@ -54,6 +54,12 @@ private:
 
 	void EndInronSight(const FInputActionValue& InValue);
 
+
+	void SpawnLandMine(const FInputActionValue& InValue);
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void SpawnLandMine_Server();
+
 	UFUNCTION()
 	void OnHittedRagdollRestoreTimerElapsed();
 
@@ -102,4 +108,7 @@ private:
 	float TargetRagdollBlendWeight = 0.f;
 	float CurrentRagdollBlendWeight = 0.f;
 	bool bIsNowRagdollBlending = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = ASPlayerCharacter, Meta = (AllowPrivateAccess = true))
+	TSubclassOf<class AActor> LandMineClass;
 };

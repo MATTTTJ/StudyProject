@@ -16,6 +16,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Engine/EngineTypes.h"
 #include "Engine/DamageEvents.h"
+#include "WorldStatics/SLandMine.h"
 
 ASTPSCharacter::ASTPSCharacter()
 	: ASCharacter()
@@ -146,6 +147,7 @@ void ASTPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		EnhancedInputComponent->BindAction(PlayerCharacterInputConfigData->ShotTriggerAction, ETriggerEvent::Started, this, &ThisClass::ToggleTrigger);
 		EnhancedInputComponent->BindAction(PlayerCharacterInputConfigData->AttackAction, ETriggerEvent::Started, this, &ThisClass::StartFire);
 		EnhancedInputComponent->BindAction(PlayerCharacterInputConfigData->AttackAction, ETriggerEvent::Completed, this, &ThisClass::StopFire);
+		EnhancedInputComponent->BindAction(PlayerCharacterInputConfigData->LandMineAction, ETriggerEvent::Started, this, &ThisClass::SpawnLandMine);
 	}
 }
 
@@ -300,9 +302,30 @@ void ASTPSCharacter::EndInronSight(const FInputActionValue& InValue)
 	TargetFOV = 70.f;
 }
 
+void ASTPSCharacter::SpawnLandMine(const FInputActionValue& InValue)
+{
+	SpawnLandMine_Server();
+}
+
+void ASTPSCharacter::SpawnLandMine_Server_Implementation()
+{
+	if(true == ::IsValid(LandMineClass))
+	{
+		FVector SpawnedLocation = (GetActorLocation() + GetActorForwardVector() * 200.f) - FVector(0.f, 0.f, 90.f);
+		ASLandMine* SpawnedLandMine = GetWorld()->SpawnActor<ASLandMine>(LandMineClass, SpawnedLocation, FRotator::ZeroRotator);
+		SpawnedLandMine->SetOwner(GetController());
+	}
+}
+
+bool ASTPSCharacter::SpawnLandMine_Server_Validate()
+{
+	// 검증용 함수, 아마도 스킬 쿨타임 체크 또는 사용 횟수 이중 체크하면 좋지않을까?
+
+	return true;
+}
+
 void ASTPSCharacter::OnHittedRagdollRestoreTimerElapsed()
 {
-	FName PivotBoneName = FName(TEXT("spine_01"));
 	TargetRagdollBlendWeight = 0.f;
 	CurrentRagdollBlendWeight = 1.f;
 	bIsNowRagdollBlending = true;

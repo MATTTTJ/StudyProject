@@ -37,5 +37,8 @@ public:
 	TObjectPtr<class UInputAction> ShotTriggerAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<class UInputAction> LandMineAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<class UInputAction> MenuAction;
 };
