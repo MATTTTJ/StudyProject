@@ -57,6 +57,8 @@ private:
 	UFUNCTION()
 	void EndCombo(class UAnimMontage* InAnimMontage, bool bInterrupted);
 
+
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ASRPGCharacter", Meta = (AllowPrivateAccess))
 	TObjectPtr<class USInputConfigData> PlayerCharacterInputConfigData;

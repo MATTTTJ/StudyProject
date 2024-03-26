@@ -20,6 +20,7 @@
 #include "WorldStatics/SLandMine.h"
 #include "Net/UnrealNetwork.h"
 #include "Engine/Engine.h"
+#include "Kismet/GameplayStatics.h"
 
 ASTPSCharacter::ASTPSCharacter()
 	: ASCharacter()
@@ -221,17 +222,15 @@ void ASTPSCharacter::Attack(const FInputActionValue& InValue)
 
 void ASTPSCharacter::Fire()
 {
+	if (true == HasAuthority() || GetOwner() != UGameplayStatics::GetPlayerController(this, 0))
+		return;
+
 	//UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("ASTPSCharacter::Attack() has been called.")));
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 
 	if(false == ::IsValid(PlayerController))
 	{
 		return;
-	}
-
-	if(true == ::IsValid(FireShake))
-	{
-		PlayerController->ClientStartCameraShake(FireShake);
 	}
 
 	FHitResult HitResult;
@@ -264,38 +263,51 @@ void ASTPSCharacter::Fire()
 		return;
 	}
 
-	if(false == AnimInstance->Montage_IsPlaying(RifleFireAnimMontage))
-	{
-		AnimInstance->Montage_Play(RifleFireAnimMontage);
-	}
-
 	if(true == bIsCollide)
 	{
-		DrawDebugLine(GetWorld(), MuzzleLocation, HitResult.Location, FColor(255, 255, 255, 64), true, 0.1f, 0u, 0.5f);
+		//DrawDebugLine(GetWorld(), MuzzleLocation, HitResult.Location, FColor(255, 255, 255, 64), true, 0.1f, 0u, 0.5f);
 
 		ASCharacter* HittedCharacter = Cast<ASCharacter>(HitResult.GetActor());
 		if(true == ::IsValid(HittedCharacter))
 		{
 			FDamageEvent DamageEvent;
-			//HittedCharacter->TakeDamage(10.f, DamageEvent, GetController(), this);
 
 			FString BoneNameString = HitResult.BoneName.ToString();
-			//UKismetSystemLibrary::PrintString(this, BoneNameString);
-			//DrawDebugSphere(GetWorld(), HitResult.Location, 3.f, 16, FColor(255, 0, 0, 255), true, 5.f, 0U, 5.f);
 
 			if(true == BoneNameString.Equals(FString(TEXT("HEAD")), ESearchCase::IgnoreCase))
 			{
-				HittedCharacter->TakeDamage(100.f, DamageEvent, GetController(), this);
+				ApplyDamageAndDrawLine_Server(MuzzleLocation, HitResult.Location, HittedCharacter, 100.f, DamageEvent, GetController(), this);
+
+				//HittedCharacter->TakeDamage(100.f, DamageEvent, GetController(), this);
 			}
 			else
 			{
-				HittedCharacter->TakeDamage(10.f, DamageEvent, GetController(), this);
+				ApplyDamageAndDrawLine_Server(MuzzleLocation, HitResult.Location, HittedCharacter, 10.f, DamageEvent, GetController(), this);
+				//HittedCharacter->TakeDamage(10.f, DamageEvent, GetController(), this);
 			}
 		}
 	}
 	else
 	{
-		DrawDebugLine(GetWorld(), MuzzleLocation, CameraEndLocation, FColor(255, 255, 255, 64), true, 0.1f, 0u, 0.5f);
+		//DrawDebugLine(GetWorld(), MuzzleLocation, CameraEndLocation, FColor(255, 255, 255, 64), true, 0.1f, 0u, 0.5f);
+		FDamageEvent DamageEvent;
+		ApplyDamageAndDrawLine_Server(MuzzleLocation, CameraEndLocation, nullptr, 0.f, DamageEvent, GetController(), this);
+	}
+
+	if(false == AnimInstance->Montage_IsPlaying(RifleFireAnimMontage))
+	{
+		AnimInstance->Montage_Play(RifleFireAnimMontage);
+		PlayAttackMontage_Server();
+	}
+
+	if (true == ::IsValid(FireShake))
+	{
+		if(GetOwner() == UGameplayStatics::GetPlayerController(this, 0))
+		{
+			// 다른 클라가 사격했는데, 내 PC화면이 흔들리지 않게끔
+			PlayerController->ClientStartCameraShake(FireShake);
+		}
+
 	}
 }
 
@@ -366,8 +378,47 @@ void ASTPSCharacter::OnHittedRagdollRestoreTimerElapsed()
 	bIsNowRagdollBlending = true;
 }
 
+void ASTPSCharacter::ApplyDamageAndDrawLine_Server_Implementation(const FVector& InDrawStart, const FVector& InDrawEnd,
+	ACharacter* InHittedCharacter, float InDamage, FDamageEvent const& InDamageEvent, AController* InEventInstigator,
+	AActor* InDamageCauser)
+{
+	if(true == ::IsValid(InHittedCharacter))
+	{
+		InHittedCharacter->TakeDamage(InDamage, InDamageEvent, InEventInstigator, InDamageCauser);
+	}
+	DrawLine_NetMulticast(InDrawStart, InDrawEnd);
+}
+
+void ASTPSCharacter::DrawLine_NetMulticast_Implementation(const FVector& InDrawStart, const FVector& InDrawEnd)
+{
+	DrawDebugLine(GetWorld(), InDrawStart, InDrawEnd, FColor(255, 255, 255, 64), false, 0.1f, 0U, 0.5f);
+}
+
+void ASTPSCharacter::PlayAttackMontage_Server_Implementation()
+{
+	PlayAttackMontage_NetMulticast();
+}
+
+void ASTPSCharacter::PlayAttackMontage_NetMulticast_Implementation()
+{
+	if (false == HasAuthority() && GetOwner() != UGameplayStatics::GetPlayerController(this, 0))
+	{
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+		if(false == ::IsValid(AnimInstance))
+		{
+			return;
+		}
+
+		if(false == AnimInstance->Montage_IsPlaying(RifleFireAnimMontage))
+		{
+			AnimInstance->Montage_Play(RifleFireAnimMontage);
+		}
+	}
+}
+
 void ASTPSCharacter::UpdateInputValue_Server_Implementation(const float& InForwardInputValue,
-	const float& InRightInputValue)
+                                                            const float& InRightInputValue)
 {
 	ForwardInputValue = InForwardInputValue;
 	RightInputValue = InRightInputValue;
