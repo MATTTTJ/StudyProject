@@ -198,16 +198,6 @@ void ASRPGCharacter::Attack(const FInputActionValue& InValue)
         ensure(FMath::IsWithinInclusive<int32>(CurrentComboCount, 1, MaxComboCount));
         bIsAttackKeyPressed = true;
     }
-
-    //UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Attack() has been called")));
-
-   /* USAnimInstance* AnimInstance = Cast<USAnimInstance>(GetMesh()->GetAnimInstance());
-    if(true == ::IsValid(AnimInstance))
-    {
-        GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
-        AnimInstance->PlayAttackAnimMontage();
-        bIsAttacking = true;
-    }*/
 }
 
 void ASRPGCharacter::Menu(const FInputActionValue& InValue)
@@ -223,8 +213,6 @@ void ASRPGCharacter::Menu(const FInputActionValue& InValue)
 
 void ASRPGCharacter::CheckHit()
 {
-    //UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("CheckHit() has been called")));
-
     FHitResult HitResult;
     FCollisionQueryParams Params(NAME_None, false, this);
 

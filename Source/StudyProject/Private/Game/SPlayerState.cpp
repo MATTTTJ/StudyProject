@@ -26,29 +26,6 @@ void ASPlayerState::InitPlayerState()
 		}
 	}
 
-	/*AGameModeBase* GM = UGameplayStatics::GetGameMode(this);
-	if(true == ::IsValid(GM))
-	{
-		FString SavedTypeString = UGameplayStatics::ParseOption(GM->OptionsString, FString(TEXT("Saved")));
-		if(true == SavedTypeString.Equals("true"))
-		{
-			USPlayerStateSave* PlayerStateSave = Cast<USPlayerStateSave>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, 0));
-			if(false == ::IsValid(PlayerStateSave))
-			{
-				PlayerStateSave = GetMutableDefault<USPlayerStateSave>();
-			}
-			SetPlayerName(PlayerStateSave->PlayerCharacterName);
-			SetCurrentLevel(PlayerStateSave->CurrentLevel);
-			SetCurrentEXP(PlayerStateSave->CurrentEXP);
-		}
-		else
-		{
-			SetPlayerName(TEXT("DefaultPlayerName"));
-			SetCurrentLevel(1);
-			SetCurrentEXP(0.f);
-		}
-	}*/
-
 	USPlayerStateSave* PlayerStateSave = Cast<USPlayerStateSave>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, 0));
 	if(false == ::IsValid(PlayerStateSave))
 	{

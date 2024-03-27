@@ -30,17 +30,20 @@ private:
 
 	void SaveInitializedSaveData();
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = USLobbyLevelUI, Meta = (AllowPrivateAccess, BindWidget))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "USLobbyLevelUI", Meta = (AllowPrivateAccess, BindWidget))
 	TObjectPtr<class UButton> RedTeamButton;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = USLobbyLevelUI, Meta = (AllowPrivateAccess, BindWidget))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "USLobbyLevelUI", Meta = (AllowPrivateAccess, BindWidget))
 	TObjectPtr<class UButton> BlueTeamButton;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = USLobbyLevelUI, Meta = (AllowPrivateAccess, BindWidget))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "USLobbyLevelUI", Meta = (AllowPrivateAccess, BindWidget))
 	TObjectPtr<class UButton> SubmitButton;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = USLobbyLevelUI, Meta = (AllowPrivateAccess, BindWidget))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "USLobbyLevelUI", Meta = (AllowPrivateAccess, BindWidget))
 	TObjectPtr<class UEditableText> EditPlayerName;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "USLobbyLevelUI", Meta = (AllowPrivateAccess, BindWidget))
+	TObjectPtr<class UEditableText> EditServerIP;
 
 	TWeakObjectPtr<class USkeletalMeshComponent> CurrentSkeletalMeshComponent;
 

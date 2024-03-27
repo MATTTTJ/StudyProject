@@ -86,6 +86,9 @@ private:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void DrawLine_NetMulticast(const FVector& InDrawStart, const FVector& InDrawEnd);
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void PlayRagdoll_NetMulticast();
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ASTPSCharacter", Meta = (AllowPrivateAccess))
 	TObjectPtr<USkeletalMeshComponent> WeaponSkeletalMeshComponent;

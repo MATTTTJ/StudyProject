@@ -6,9 +6,11 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Component/SStatComponent.h"
+#include "Controllers/SPlayerController.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
-
+#include "Game/SGameState.h"
 ASCharacter::ASCharacter()
 {
     PrimaryActorTick.bCanEverTick = false;
@@ -38,6 +40,12 @@ ASCharacter::ASCharacter()
 
     //bIsDead = false;
     StatComponent = CreateDefaultSubobject<USStatComponent>(TEXT("StatComponent"));
+
+    // 서버에서 실행한 것이라면 HP를 연동해라
+    if(true == HasAuthority())
+    {
+        StatComponent->SetIsReplicated(true);
+    }
 }
 
 void ASCharacter::BeginPlay()
@@ -60,6 +68,13 @@ float ASCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEven
 {
     float FinalDamageAmount = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
+    ASGameState* SGameState = Cast<ASGameState>(UGameplayStatics::GetGameState(this));
+
+    if(true == ::IsValid(SGameState) && EMatchState::Playing != SGameState->MatchState)
+    {
+        return FinalDamageAmount;
+    }
+
     StatComponent->SetCurrentHP(StatComponent->GetCurrentHP() - FinalDamageAmount);
 
     UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("%s [%.1f / %.1f]"), *GetName(), StatComponent->GetCurrentHP(), StatComponent->GetMaxHP()));
@@ -75,5 +90,11 @@ void ASCharacter::OnCharacterDeath()
     if(true == StatComponent->OnOutOfCurrentHPDelegate.IsAlreadyBound(this, &ThisClass::ASCharacter::OnCharacterDeath))
     {
         StatComponent->OnOutOfCurrentHPDelegate.RemoveDynamic(this, &ThisClass::OnCharacterDeath);
+    }
+
+    ASPlayerController* PlayerController = GetController<ASPlayerController>();
+    if(true == ::IsValid(PlayerController) && true == HasAuthority())
+    {
+        PlayerController->OnOwningCharacterDead();
     }
 }

@@ -136,23 +136,25 @@ float ASTPSCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageE
 {
 	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	if(false == ::IsValid(GetStatComponent()))
-	{
-		return ActualDamage;
-	}
+	//if(false == ::IsValid(GetStatComponent()))
+	//{
+	//	return ActualDamage;
+	//}
 
-	if(GetStatComponent()->GetCurrentHP() < KINDA_SMALL_NUMBER)
-	{
-		GetMesh()->SetSimulatePhysics(true);
-	}
-	else
-	{
-		FName PivotBoneName = FName(TEXT("spine_01"));
-		GetMesh()->SetAllBodiesBelowSimulatePhysics(PivotBoneName, true); // 상체만 랙돌 적용
-		TargetRagdollBlendWeight = 0.1f;
-		HittedRagdollRestoreTimeDelegate.BindUObject(this, &ThisClass::OnHittedRagdollRestoreTimerElapsed);
-		GetWorld()->GetTimerManager().SetTimer(HittedRagdollRestoreTimer, HittedRagdollRestoreTimeDelegate, 1.f, false);
-	}
+	//if(GetStatComponent()->GetCurrentHP() < KINDA_SMALL_NUMBER)
+	//{
+	//	GetMesh()->SetSimulatePhysics(true);
+	//}
+	//else
+	//{
+	//	FName PivotBoneName = FName(TEXT("spine_01"));
+	//	GetMesh()->SetAllBodiesBelowSimulatePhysics(PivotBoneName, true); // 상체만 랙돌 적용
+	//	TargetRagdollBlendWeight = 0.1f;
+	//	HittedRagdollRestoreTimeDelegate.BindUObject(this, &ThisClass::OnHittedRagdollRestoreTimerElapsed);
+	//	GetWorld()->GetTimerManager().SetTimer(HittedRagdollRestoreTimer, HittedRagdollRestoreTimeDelegate, 1.f, false);
+	//}
+
+	PlayRagdoll_NetMulticast();
 
 	return ActualDamage;
 }
@@ -378,9 +380,30 @@ void ASTPSCharacter::OnHittedRagdollRestoreTimerElapsed()
 	bIsNowRagdollBlending = true;
 }
 
+void ASTPSCharacter::PlayRagdoll_NetMulticast_Implementation()
+{
+	if(false == ::IsValid(GetStatComponent()))
+	{
+		return;
+	}
+
+	if(GetStatComponent()->GetCurrentHP() < KINDA_SMALL_NUMBER)
+	{
+		GetMesh()->SetSimulatePhysics(true);
+	}
+	else
+	{
+		FName PivotBoneName = FName(TEXT("spine_01"));
+		GetMesh()->SetAllBodiesBelowSimulatePhysics(PivotBoneName, true);
+		TargetRagdollBlendWeight = 1.f;
+		HittedRagdollRestoreTimeDelegate.BindUObject(this, &ThisClass::OnHittedRagdollRestoreTimerElapsed);
+		GetWorld()->GetTimerManager().SetTimer(HittedRagdollRestoreTimer, HittedRagdollRestoreTimeDelegate, 1.f, false);
+	}
+}
+
 void ASTPSCharacter::ApplyDamageAndDrawLine_Server_Implementation(const FVector& InDrawStart, const FVector& InDrawEnd,
-	ACharacter* InHittedCharacter, float InDamage, FDamageEvent const& InDamageEvent, AController* InEventInstigator,
-	AActor* InDamageCauser)
+                                                                  ACharacter* InHittedCharacter, float InDamage, FDamageEvent const& InDamageEvent, AController* InEventInstigator,
+                                                                  AActor* InDamageCauser)
 {
 	if(true == ::IsValid(InHittedCharacter))
 	{
@@ -391,7 +414,7 @@ void ASTPSCharacter::ApplyDamageAndDrawLine_Server_Implementation(const FVector&
 
 void ASTPSCharacter::DrawLine_NetMulticast_Implementation(const FVector& InDrawStart, const FVector& InDrawEnd)
 {
-	DrawDebugLine(GetWorld(), InDrawStart, InDrawEnd, FColor(255, 255, 255, 64), false, 0.1f, 0U, 0.5f);
+	DrawDebugLine(GetWorld(), InDrawStart, InDrawEnd, FColor(255, 255, 255, 64), false, 3.f, 0U, 0.5f);
 }
 
 void ASTPSCharacter::PlayAttackMontage_Server_Implementation()

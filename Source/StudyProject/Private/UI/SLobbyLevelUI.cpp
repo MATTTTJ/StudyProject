@@ -9,6 +9,7 @@
 #include "Game/SGameInstance.h"
 #include "Components/EditableText.h"
 #include "Kismet/GameplayStatics.h"
+#include "Controllers/SUIPlayerController.h"
 
 void USLobbyLevelUI::NativeConstruct()
 {
@@ -71,7 +72,13 @@ void USLobbyLevelUI::OnSubmitButtonClicked()
 	}
 
 	SaveInitializedSaveData();
-	UGameplayStatics::OpenLevel(GetWorld(), TEXT("Loading"), true, FString(TEXT("NextLevel=ExampleMap?Saved=true")));
+
+	ASUIPlayerController* PlayerController = GetOwningPlayer<ASUIPlayerController>();
+	if(true == ::IsValid(PlayerController))
+	{
+		FText ServerIP = EditServerIP->GetText();
+		PlayerController->JoinServer(ServerIP.ToString());
+	}
 }
 
 void USLobbyLevelUI::SaveInitializedSaveData()
